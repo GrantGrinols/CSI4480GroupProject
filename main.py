@@ -33,9 +33,16 @@ def GenerateVoice(text, name):
             wave_file.setsampwidth(2)
             wave_file.setframerate(44100)
             wave_file.writeframes(voicesound)
+        return filename #name of the new ai voice file
        
     else:
         print("Voice not found. Please try again")
+
+def CompareVoice(generatedvoice, realvoice):
+    #print out the graph of each voice
+    #Find some way to compare generatevoice with realvoice
+    #print out the similarity
+    print("Work in progress")
 
     
 
@@ -57,6 +64,12 @@ while(option!=-1):
         voice=input("Enter the voice you want to use: ")
         text=input("Enter the text you want this voice to mimic: ")
         GenerateVoice(text, voice)
+    if(option==3):
+        realvoicefile= input("Enter the file name of the voice you want to compare: ")
+        voice = input("Enter the relevent AI voice: ")
+        text = input("Enter the text the voice is trying to mimic: ")
+        generatedvoiceFile = GenerateVoice(text, voice)
+        CompareVoice(generatedvoiceFile, realvoicefile)
         
     
 
