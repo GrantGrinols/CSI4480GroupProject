@@ -5,8 +5,6 @@ import librosa
 import pandas as pd
 import matplotlib.pylab as plt
 import librosa.display
-from pydub import AudioSegment
-from pydub.utils import mediainfo
 from resemblyzer import VoiceEncoder,preprocess_wav
 import numpy as np
 
@@ -39,7 +37,7 @@ def GenerateVoice(text, name):
         with wave.open(filename, 'w') as wave_file:
             wave_file.setnchannels(2)
             wave_file.setsampwidth(2)
-            wave_file.setframerate(8500)
+            wave_file.setframerate(8000)
             wave_file.writeframes(voicesound)
         return filename #path of the new ai voice file
        
@@ -77,13 +75,13 @@ def DrawGraph(AIVoice, realVoice):
     plt.subplot(2,1,1)
     plt.title("AI Audio")
     plt.ylabel('Amplitude')
-    pd.Series(y1).plot(figsize=(10,5))
+    pd.Series(y1[:10000]).plot(figsize=(10,5))
     plt.subplot(2,1,2)
     plt.title("Real Audio")
     plt.ylabel('Amplitude')
-    pd.Series(y2).plot(figsize=(10,5))
+    pd.Series(y2[:10000]).plot(figsize=(10,5))
     plt.show()
-CompareVoice("audio_data/0ghm5Cqpfwk.mp3","AIclips/4glfwiMXgwQ.mp3") 
+#CompareVoice("audio_data/Grant1.wav","AIclips/VoiceclipKyleVoice.wav") 
 
 option =0
 #DrawGraph("AIClips/VoiceclipKyleVoice.wav","audio_data/Hello.wav")
@@ -113,3 +111,4 @@ while(option!=-1):
         
     
 
+3
