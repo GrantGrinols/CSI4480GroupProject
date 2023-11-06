@@ -33,7 +33,7 @@ def GenerateVoice(text, name):
         voicesound = elevenlabs.generate(text,KEY, name)#generates the voice (in bytes) by sending the text, key, and name over to elevenlabs
         
         elevenlabs.play(voicesound)#play the sound. The ffmpeg.exe should be in this folder or on your PATH
-        filename = "AIClips/Voiceclip"+name+".wav"#save the sound we made. Useful for later.
+        filename = "AIClips/Voiceclip"+RemoveSpaces(name)+".wav"#save the sound we made. Useful for later.
         with wave.open(filename, 'w') as wave_file:
             wave_file.setnchannels(2)
             wave_file.setsampwidth(2)
@@ -82,7 +82,9 @@ def DrawGraph(AIVoice, realVoice):
     pd.Series(y2[:10000]).plot(figsize=(10,5))
     plt.show()
 #CompareVoice("audio_data/Grant1.wav","AIclips/VoiceclipKyleVoice.wav") 
-
+def RemoveSpaces(stringWithSpaces):
+    stringNoSpaces = ''.join(stringWithSpaces.split())
+    return stringNoSpaces
 option =0
 #DrawGraph("AIClips/VoiceclipKyleVoice.wav","audio_data/Hello.wav")
 print("Hello, and welcome to the AI voice mimic!")
