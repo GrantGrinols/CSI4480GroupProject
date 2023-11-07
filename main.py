@@ -45,7 +45,7 @@ def GenerateVoice(text, name):
         print("Voice not found. Please try again")
 
 def CompareVoice(generatedvoice, realvoice):
-   ## DrawGraph(generatedvoice, realvoice)
+    DrawGraph(generatedvoice, realvoice)
    
     #Find some way to compare generatevoice with realvoice
     #print out the similarity
@@ -63,7 +63,7 @@ def CompareVoice(generatedvoice, realvoice):
     similarity= int(similarity)
     print("Similarity: %"+ str(similarity))
 
-    
+
 
 def DrawGraph(AIVoice, realVoice): 
     #print out the graph of each voice
@@ -81,12 +81,14 @@ def DrawGraph(AIVoice, realVoice):
     plt.ylabel('Amplitude')
     pd.Series(y2[:10000]).plot(figsize=(10,5))
     plt.show()
-#CompareVoice("audio_data/Grant1.wav","AIclips/VoiceclipKyleVoice.wav") 
+
 def RemoveSpaces(stringWithSpaces):
     stringNoSpaces = ''.join(stringWithSpaces.split())
     return stringNoSpaces
 option =0
-#DrawGraph("AIClips/VoiceclipKyleVoice.wav","audio_data/Hello.wav")
+
+#CompareVoice("AIClips/FakeGrant.mp3","audio_data/BadGrantSampleMaybe.wav") 
+#DrawGraph("AIClips/VoiceclipKyleVoice.wav","audio_data/KyleDo2.wav")
 print("Hello, and welcome to the AI voice mimic!")
 print("Remember to set your API key!")
 SetKey(KEY)
