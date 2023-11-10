@@ -7,6 +7,7 @@ import matplotlib.pylab as plt
 import librosa.display
 from resemblyzer import VoiceEncoder,preprocess_wav
 import numpy as np
+import os
 
 jsonFile = open("APIKey.json")
 key = json.load(jsonFile)
@@ -24,26 +25,56 @@ def GenerateVoice(text, name):
 
     for voice in voicelist:
         if(voice.name==name):#looks to see if the name is in the list
+            
+            voice_id = voice.voice_id
+            print(voice_id)
             print("found voice")
             foundflag = True
 
             break
     
     if(foundflag==True):
-        voicesound = elevenlabs.generate(text,KEY, name)#generates the voice (in bytes) by sending the text, key, and name over to elevenlabs
-        
+        voicesound = elevenlabs.generate(text=text,voice= elevenlabs.Voice(voice_id=voice_id,settings=VoiceSettings))#generates the voice (in bytes) by sending the text, key, and name over to elevenlabs
+        2
         elevenlabs.play(voicesound)#play the sound. The ffmpeg.exe should be in this folder or on your PATH
-        filename = "AIClips/Voiceclip"+RemoveSpaces(name)+".wav"#save the sound we made. Useful for later.
-        with wave.open(filename, 'w') as wave_file:
-            wave_file.setnchannels(2)
-            wave_file.setsampwidth(2)
-            wave_file.setframerate(8000)
-            wave_file.writeframes(voicesound)
+        filename = "AIClips/AIVoice"+RemoveSpaces(name)+".wav"#save the sound we made. Useful for later.
+        elevenlabs.save(audio=voicesound, filename=filename)
         return filename #path of the new ai voice file
        
     else:
         print("Voice not found. Please try again")
+def CloneVoice():
+    print("Please make sure the voice samples is in the audio_data/clone_data/[Name of AI voice] folder")
+    foldername=input("Insert the name you want to clone: ")
+    path = "audiodata/clonedata/"+foldername
+    if os.path.exists(path) and os.path.isdir(path):
+        file_list = []
+        for file_name in os.listdir(path):
+            print(file_name)
+            file_list.append("audiodata/clonedata/"+foldername+"/"+file_name)
+        elevenlabs.clone(
+            name = foldername,
+            description = "A new voice added to the Elevenlabs library via the Python project",
+            files = file_list,
 
+        )
+
+    else:
+        print("Folder not found")    
+def ChangeSettings():
+    print("These are the settings to set the Elevenlabs voice generation.")
+    print("The default for our project is stability =.75 and similarity boost = .5")
+    print("From our testing, this looks to be best result, but feel free to mess around!")
+    print("Anything value less than 0 or greater than 1 will be clamped")
+    stability = input("enter your stability: ")
+    stability=Clamp(int(stability))
+    similarity = input("enter your similarity boost: ")
+    similarity = Clamp(int(similarity))
+    VoiceSettings = elevenlabs.VoiceSettings(stability=stability,similarity_boost=similarity,use_speaker_boost=True, style= 0.0)
+    print("Changes made")
+
+def Clamp(number, minvalue, maxvalue):
+    return max(min(number, maxvalue), minvalue)  
 def CompareVoice(generatedvoice, realvoice):
     DrawGraph(generatedvoice, realvoice)
    
@@ -69,31 +100,42 @@ def DrawGraph(AIVoice, realVoice):
     #print out the graph of each voice
     y1, sr1 = librosa.load(AIVoice)
     y2, sr2 = librosa.load(realVoice)
-    
+
+    AIFileName = os.path.basename(AIVoice)
+    realFileName = os.path.basename(realVoice)
+    AIFileName = str(os.path.splitext(AIFileName)[0])
+    realFileName = str(os.path.splitext(realFileName)[0])
+    AIFileName = AIFileName.lstrip('/')
+    realFileName = realFileName.lstrip('/')
+
+
     time1 = librosa.times_like(y1, sr=sr1)
     time2 = librosa.times_like(y2, sr=sr2)
     plt.subplot(2,1,1)
-    plt.title("AI Audio")
+    plt.title("AI Audio: "+ AIFileName)
     plt.ylabel('Amplitude')
     pd.Series(y1[:10000]).plot(figsize=(10,5))
     plt.subplot(2,1,2)
-    plt.title("Real Audio")
+    plt.title("Real Audio: "+ realFileName)
     plt.ylabel('Amplitude')
     pd.Series(y2[:10000]).plot(figsize=(10,5))
+    plt.savefig("Graphs/"+AIFileName+"Versus"+realFileName+".png")
     plt.show()
+    
 
 def RemoveSpaces(stringWithSpaces):
     stringNoSpaces = ''.join(stringWithSpaces.split())
     return stringNoSpaces
 option =0
 
-#CompareVoice("AIClips/FakeGrant.mp3","audio_data/BadGrantSampleMaybe.wav") 
+#CompareVoice("AIClips/FakeGrant.wav","audiodata/Grant2.wav") 
 #DrawGraph("AIClips/VoiceclipKyleVoice.wav","audio_data/KyleDo2.wav")
 print("Hello, and welcome to the AI voice mimic!")
 print("Remember to set your API key!")
 SetKey(KEY)
+VoiceSettings = elevenlabs.VoiceSettings(stability=.75,similarity_boost=.5, use_speaker_boost=True, style= 0.0)
 while(option!=-1):
-    print("Would you like to (1) list avaliable options or (2) enter text or (3) Compare mode (-1) to exit")
+    print("Would you like to (1) list avaliable options or (2) enter text or (3) Compare mode or (4) clone a voice or (5) generation settings (-1) to exit")
     option = int(input("Enter your option now: "))
     if(option==-1):
         print("I hope you have a fantasy day. Goodbye!")
@@ -107,12 +149,15 @@ while(option!=-1):
         GenerateVoice(text, voice)
     if(option==3):
         realvoicefile= input("Enter the file name of the voice you want to compare: ")
-        realvoicefile = "audio_data/"+realvoicefile+".wav"
+        realvoicefile = "audiodata/"+realvoicefile+".wav"
         voice = input("Enter the relevent AI voice: ")
         text = input("Enter the text the voice is trying to mimic: ")
         generatedvoiceFile = GenerateVoice(text, voice)
         CompareVoice(generatedvoiceFile, realvoicefile)
-        
+    if(option==4):
+        CloneVoice()
+    if(option==5):
+        ChangeSettings()    
     
 
 3
