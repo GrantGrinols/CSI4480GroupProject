@@ -11,6 +11,7 @@ import os
 
 jsonFile = open("APIKey.json")
 key = json.load(jsonFile)
+errors = [] #An array of errors that will print out to the reader if there is a problem
 KEY = key["APIKey"]#The API Key. Never public post your key.
 def SetKey(key):
     elevenlabs.set_api_key(key)#sets the key
@@ -27,40 +28,89 @@ def GenerateVoice(text, name):
         if(voice.name==name):#looks to see if the name is in the list
             
             voice_id = voice.voice_id
-            print(voice_id)
             print("found voice")
             foundflag = True
 
             break
     
     if(foundflag==True):
-        voicesound = elevenlabs.generate(text=text,voice= elevenlabs.Voice(voice_id=voice_id,settings=VoiceSettings))#generates the voice (in bytes) by sending the text, key, and name over to elevenlabs
+        voicesound = elevenlabs.generate(text=text,voice= elevenlabs.Voice(voice_id=voice_id,settings=VoiceSettings))#generates the voice (in bytes) by sending the text, voice ID, and settings
         2
         elevenlabs.play(voicesound)#play the sound. The ffmpeg.exe should be in this folder or on your PATH
-        filename = "AIClips/AIVoice"+RemoveSpaces(name)+".wav"#save the sound we made. Useful for later.
+        filename = "AIClips/AIVoice"+RemoveSpaces(name)+".wav"#save the sound we made in the "AIClips/AIVoice" folder.
         elevenlabs.save(audio=voicesound, filename=filename)
         return filename #path of the new ai voice file
        
     else:
-        print("Voice not found. Please try again")
+        errors.append("Voice not found. Please try again.")
 def CloneVoice():
     print("Please make sure the voice samples is in the audio_data/clone_data/[Name of AI voice] folder")
     foldername=input("Insert the name you want to clone: ")
     path = "audiodata/clonedata/"+foldername
+    clonename = MakeUniqueName(foldername,0)
+    print("My voice "+ clonename)
     if os.path.exists(path) and os.path.isdir(path):
         file_list = []
         for file_name in os.listdir(path):
             print(file_name)
             file_list.append("audiodata/clonedata/"+foldername+"/"+file_name)
         elevenlabs.clone(
-            name = foldername,
+            name = clonename,
             description = "A new voice added to the Elevenlabs library via the Python project",
             files = file_list,
 
         )
 
     else:
-        print("Folder not found")    
+        errors.append("Folder not found.")
+
+
+def MakeUniqueName(foldername,number):
+    dupeflag = False
+    testname = foldername
+    if(number > 0):
+        testname = testname + str(number)
+    ## This function makes sure the clone name is unique. This just makes finding the name we want... so much easier.
+    voicelist = elevenlabs.voices()
+    for voice in voicelist:
+        if(voice.name == testname):
+            print("Duplication detected")
+            number = number + 1
+            dupeflag = True
+            break
+    if(not(dupeflag)):
+        if(number > 0):
+            foldername = foldername + str(number)#if there is a duplicate name, add a number to do to make sure the name is unique.
+        print("Voice name: "+ foldername)
+        return foldername
+    else:
+        return MakeUniqueName(foldername,number)#keep looping numbers until a 
+    
+def RemoveVoice(name):
+    voicelist = elevenlabs.voices()##removes the voice 
+    voice_id = ""
+    foundflag = False
+    for voice in voicelist:
+        if(voice.name == name):
+            print("Found voice.")
+            voice_id = voice.voice_id
+            foundflag = True
+            break
+    if(foundflag):
+        url = "https://api.elevenlabs.io/v1/voices/" + voice_id #voice_id is the voice we are deleting
+
+        headers = {#uses the request library, provided by elevenlabs, to request to delete the voice.
+            "Accept":"application/json",
+            "xi-api-key": KEY
+        }
+        response = elevenlabs.requests.delete(url, headers=headers)
+        print(response.text)
+        print("voice deleted")
+    else:
+        errors.append("Voice not found")
+
+
+
 def ChangeSettings():
     print("These are the settings to set the Elevenlabs voice generation.")
     print("The default for our project is stability =.75 and similarity boost = .5")
@@ -76,6 +126,10 @@ def ChangeSettings():
 def Clamp(number, minvalue, maxvalue):
     return max(min(number, maxvalue), minvalue)  
 def CompareVoice(generatedvoice, realvoice):
+    if(not(os.path.exists(realvoice))):
+        errors.append("Real voice not found. Are you sure you've spelled it right and it's in the audiodata folder?")
+        return
+     
     DrawGraph(generatedvoice, realvoice)
    
     #Find some way to compare generatevoice with realvoice
@@ -127,7 +181,11 @@ def RemoveSpaces(stringWithSpaces):
     stringNoSpaces = ''.join(stringWithSpaces.split())
     return stringNoSpaces
 option =0
-
+def PrintErrors():#Why are we adding errors to an array? It'll be useful url redirection for flask
+    if(errors.__len__() > 0):
+        for error in errors:
+            print(error)
+    errors.clear()
 #CompareVoice("AIClips/FakeGrant.wav","audiodata/Grant2.wav") 
 #DrawGraph("AIClips/VoiceclipKyleVoice.wav","audio_data/KyleDo2.wav")
 print("Hello, and welcome to the AI voice mimic!")
@@ -135,7 +193,7 @@ print("Remember to set your API key!")
 SetKey(KEY)
 VoiceSettings = elevenlabs.VoiceSettings(stability=.75,similarity_boost=.5, use_speaker_boost=True, style= 0.0)
 while(option!=-1):
-    print("Would you like to (1) list avaliable options or (2) enter text or (3) Compare mode or (4) clone a voice or (5) generation settings (-1) to exit")
+    print("Would you like to (1) list avaliable options, (2) to generate audio, (3) to enter Compare Mode, (4) to clone a voice, (5) to delete a voice, or (6) generation settings (-1) to exit")
     option = int(input("Enter your option now: "))
     if(option==-1):
         print("I hope you have a fantasy day. Goodbye!")
@@ -157,7 +215,11 @@ while(option!=-1):
     if(option==4):
         CloneVoice()
     if(option==5):
+        print("This will delete the oldest voice with the given name. This voice will be gone for good so be careful!")
+        name = input("Enter the name of the voice you want to enter: ")
+        RemoveVoice(name)
+    if(option==6):
         ChangeSettings()    
-    
+    PrintErrors()
 
 3
