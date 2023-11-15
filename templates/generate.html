@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSI 4480 Project</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='CSS/global.css')}}">
+    </head>
+    <body>
+        <h1>Welcome!</h1>
+        <p>Hello!</p>
+        <form action="{{url_for('generate')}}" method="post">
+            <label for=""dropdown">Select your AI voice</label>
+            <select id = "dropdown" name="dropdown">
+                {% for name in names %}
+                <option value="{{ name }}">{{ name }}</option>
+                {% endfor %}
+            </select>
+            <textarea id = "input_field" name="input_field" rows="6" cols="50" placeholder="{{ placeholder }}"></textarea>
+            <label for="stability_slider">Choose Stability</label>
+            <input type="range" id="stability_slider" name="stability_slider" min="0" max="1" step="0.01" value="0.75" oninput="updateSliderValue(this.value,0)">
+            <span id="slidervalue0">0.75</span>
+            <label for = "similarity_boost_slider">Choose Similiarity Boost</label>
+            <input type="range" id="similarity_boost_slider" name="similarity_boost_slider" min="0" max="1" step="0.01" value="0.5" oninput="updateSliderValue(this.value,1)">
+            <span id="slidervalue1">0.50</span>
+            <button type="submit">Generate Text-To-Speech</button>
+        </form>
+        {% if generateflag %}
+        <h3>Voice generation successful! Here is the clip to play it again:</h3>
+        <audio controls>
+            <source src="{{url_for('static',filename=voiceUrl) }}" type="audio/wav">
+            Your browser does not support this file type.
+        </audio>
+        {% endif %}
+
+        <script>
+            function updateSliderValue(val, id){
+                document.getElementById('slidervalue'+id).innerText = val;
+            }
+        </script>
+    </body>
+</html>

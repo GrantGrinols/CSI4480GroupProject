@@ -8,23 +8,32 @@ import librosa.display
 from resemblyzer import VoiceEncoder,preprocess_wav
 import numpy as np
 import os
+from flask import Flask, redirect, url_for, render_template, request
+import random
 
-jsonFile = open("APIKey.json")
-key = json.load(jsonFile)
-errors = [] #An array of errors that will print out to the reader if there is a problem
-KEY = key["APIKey"]#The API Key. Never public post your key.
-def SetKey(key):
-    elevenlabs.set_api_key(key)#sets the key
+KEY = "None"
+if(os.path.exists("APIKey.json")):
+    jsonFile = open("APIKey.json")
+    key = json.load(jsonFile)
+    errors = [] #An array of errors that will print out to the reader if there is a problem
+    KEY = key["APIKey"]#The API Key. Never public post your key.
+    elevenlabs.set_api_key(KEY)
+    print("key loaded")
+    
+else:
+    print("Warning: No Key detected. Be sure to enter it in the home page")
+
 def GetVoices():
     voicelist = elevenlabs.voices()
 
     for voice in voicelist:#fetches all the voices avaliable to the API key
         print(voice.name)
-def GenerateVoice(text, name):
+def GenerateVoice(text, name,settings):
     foundflag = False
     voicelist = elevenlabs.voices()
-
+    print(name + "Thanks")
     for voice in voicelist:
+        
         if(voice.name==name):#looks to see if the name is in the list
             
             voice_id = voice.voice_id
@@ -34,10 +43,10 @@ def GenerateVoice(text, name):
             break
     
     if(foundflag==True):
-        voicesound = elevenlabs.generate(text=text,voice= elevenlabs.Voice(voice_id=voice_id,settings=VoiceSettings))#generates the voice (in bytes) by sending the text, voice ID, and settings
+        voicesound = elevenlabs.generate(text=text,voice= elevenlabs.Voice(voice_id=voice_id,settings=settings))#generates the voice (in bytes) by sending the text, voice ID, and settings
         2
         elevenlabs.play(voicesound)#play the sound. The ffmpeg.exe should be in this folder or on your PATH
-        filename = "AIClips/AIVoice"+RemoveSpaces(name)+".wav"#save the sound we made in the "AIClips/AIVoice" folder.
+        filename = "static/AIClips/AIVoice"+RemoveSpaces(name)+".wav"#save the sound we made in the "AIClips/AIVoice" folder.
         elevenlabs.save(audio=voicesound, filename=filename)
         return filename #path of the new ai voice file
        
@@ -186,40 +195,78 @@ def PrintErrors():#Why are we adding errors to an array? It'll be useful url red
         for error in errors:
             print(error)
     errors.clear()
-#CompareVoice("AIClips/FakeGrant.wav","audiodata/Grant2.wav") 
-#DrawGraph("AIClips/VoiceclipKyleVoice.wav","audio_data/KyleDo2.wav")
-print("Hello, and welcome to the AI voice mimic!")
-print("Remember to set your API key!")
-SetKey(KEY)
-VoiceSettings = elevenlabs.VoiceSettings(stability=.75,similarity_boost=.5, use_speaker_boost=True, style= 0.0)
-while(option!=-1):
-    print("Would you like to (1) list avaliable options, (2) to generate audio, (3) to enter Compare Mode, (4) to clone a voice, (5) to delete a voice, or (6) generation settings (-1) to exit")
-    option = int(input("Enter your option now: "))
-    if(option==-1):
-        print("I hope you have a fantasy day. Goodbye!")
-        exit()
-    if(option==1):
-        print("Here's your list of avaliable voices: ")
-        GetVoices()
-    if(option==2):
-        voice=input("Enter the voice you want to use: ")
-        text=input("Enter the text you want this voice to mimic: ")
-        GenerateVoice(text, voice)
-    if(option==3):
-        realvoicefile= input("Enter the file name of the voice you want to compare: ")
-        realvoicefile = "audiodata/"+realvoicefile+".wav"
-        voice = input("Enter the relevent AI voice: ")
-        text = input("Enter the text the voice is trying to mimic: ")
-        generatedvoiceFile = GenerateVoice(text, voice)
-        CompareVoice(generatedvoiceFile, realvoicefile)
-    if(option==4):
-        CloneVoice()
-    if(option==5):
-        print("This will delete the oldest voice with the given name. This voice will be gone for good so be careful!")
-        name = input("Enter the name of the voice you want to enter: ")
-        RemoveVoice(name)
-    if(option==6):
-        ChangeSettings()    
-    PrintErrors()
+def FetchNames():#simplies fetches the voices found in the elevenlabs account
+    names = []
+    voicelist = elevenlabs.voices()
+    for voice in voicelist:
+        names.append(voice.name)
+    return names
 
-3
+def GetRandomPlaceholder():
+    RandomList = ["Never gonna give you up.\nNever gonna let you down.\nNever gonna clown around and desert you.",
+                  "The next big thing is here: Using Text-To-Speech generation. Text To Speech generation has been making waves recently. It's so fast for Congress to keep up.",
+                  "A fun fact about computers is that the first electronic computer, known as ENIAC (Electronic Numerical Integrator and Computer), weighed around 27 tons and occupied about 1,800 square feet of floor space. It was built in the 1940s and used around 18,000 vacuum tubes, consuming a significant amount of electricity and generating a lot of heat. Despite being incredibly large and much less powerful than modern devices, it paved the way for the development of today's compact and high-speed computers. This was brought to you by Chat-GBT",
+                  "Welcome to Oakland University.\nThe school hosts several highly education fields such as SECS, Arts, Health, Business, and so much more! The campus does its best to meet student expectations.",
+                  "Hello fellow human. These are not the humans you are searching for. I am a human by the way.",
+                  "Hello. This is your long lost uncle. I've been busy after it was discovered I was a nigerian prince. I have a large quanity of gold that needs to leave my royal estate, and I need your help.",
+                  "Sometimes the only thing that keeps me up at night... is you",
+                  "A bee's wing span can not in support its own body weight. Therefore, bees are witchcraft",
+                  "This sentence costed you a fraction of a coin! Thank you for your patronage.",
+                  "He's checking his list. Checking it twice. \nHe's checking whether you've been naughty or nice. \nAnnnyii Liu is coming to town!"]
+    chosenstring = random.choice(RandomList)
+    print(chosenstring)
+    return chosenstring
+
+print("Hello, and welcome to the AI voice mimic! Starting up web page...")
+
+
+
+##here be flask implementations
+app = Flask(__name__, static_url_path='/static')#Important: Put all images/audio and other paths in the static folder when you want to display it in the web page!
+@app.route("/")
+def home():##consider this the home page. This html loads when the python runs.
+    return render_template("index.html")
+
+@app.route("/process",methods=['POST','GET'])#Think as this as the 'central processor' that takes the user to the right url. Without this, request.form() would be confused trying to guess what you want.
+def process():
+    try:
+        value = request.form['key_field']
+        if(not(os.path.exists("APIKey.json"))):
+            KEY = value
+            elevenlabs.set_api_key(KEY)
+            print("Key loaded")
+    except:
+        print("Key already loaded")
+    try:
+        destination= request.form['destination']#The page we are going to
+        print("Redirecting To:" + destination)
+        return redirect(url_for(destination))
+    except:
+        return url_for('error')#if there is a messup, go to the error page
+@app.route('/generate', methods=['POST','GET'])##clicking the button with the action="{{url_for('generate')}}" goes here
+def generate():
+    generateflag = False
+    voiceUrl = ""
+    staticUrl= ""
+    try:
+        inputText = request.form['input_field']
+        stability = float(request.form['stability_slider'])
+        similarity_boost = float(request.form['similarity_boost_slider'])
+        name = request.form['dropdown']
+        VoiceSettings = elevenlabs.VoiceSettings(stability=stability,similarity_boost=similarity_boost, use_speaker_boost=True, style= 0.0)
+        print("Generating a voice with "+ name)
+        voiceUrl=GenerateVoice(inputText,name,VoiceSettings)
+        staticUrl = voiceUrl.lstrip("static/")
+        print(staticUrl)
+        generateflag = True
+
+    except:
+        print("")
+    inputText = GetRandomPlaceholder()
+    names = FetchNames()
+    return render_template("generate.html", names=names,placeholder=inputText, voiceUrl=staticUrl,generateflag=generateflag)
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
