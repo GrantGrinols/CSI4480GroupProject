@@ -31,7 +31,6 @@ def GetVoices():
 def GenerateVoice(text, name,settings):
     foundflag = False
     voicelist = elevenlabs.voices()
-    print(name + "Thanks")
     for voice in voicelist:
         
         if(voice.name==name):#looks to see if the name is in the list
@@ -44,8 +43,6 @@ def GenerateVoice(text, name,settings):
     
     if(foundflag==True):
         voicesound = elevenlabs.generate(text=text,voice= elevenlabs.Voice(voice_id=voice_id,settings=settings))#generates the voice (in bytes) by sending the text, voice ID, and settings
-        2
-        elevenlabs.play(voicesound)#play the sound. The ffmpeg.exe should be in this folder or on your PATH
         filename = "static/AIClips/AIVoice"+RemoveSpaces(name)+".wav"#save the sound we made in the "AIClips/AIVoice" folder.
         elevenlabs.save(audio=voicesound, filename=filename)
         return filename #path of the new ai voice file
@@ -231,6 +228,7 @@ def home():##consider this the home page. This html loads when the python runs.
 def process():
     try:
         value = request.form['key_field']
+        print(value)
         if(not(os.path.exists("APIKey.json"))):
             KEY = value
             elevenlabs.set_api_key(KEY)

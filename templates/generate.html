@@ -24,8 +24,8 @@
             <button type="submit">Generate Text-To-Speech</button>
         </form>
         {% if generateflag %}
-        <h3>Voice generation successful! Here is the clip to play it again:</h3>
-        <audio controls>
+        <h3>Voice generation successful! The voice clip is already saved under the static/AIclips folder.</h3>
+        <audio controls autoplay>
             <source src="{{url_for('static',filename=voiceUrl) }}" type="audio/wav">
             Your browser does not support this file type.
         </audio>

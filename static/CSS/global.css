@@ -1,3 +1,14 @@
-h1 {
-    color:gray
+.url-button{
+    width: 160px;
+    height: 40px;
+    font: 16px;
+
+    color: black;
+    background-color: red;
+    border: 1px solid black;
+    transition: background-color 0.3s ease;
+}
+
+.url-button:hover{
+    background-color: #ff6666;
 }
