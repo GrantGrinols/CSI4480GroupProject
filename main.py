@@ -136,7 +136,7 @@ def CompareVoice(generatedvoice, realvoice):
         errors.append("Real voice not found. Are you sure you've spelled it right and it's in the audiodata folder?")
         return
      
-    DrawGraph(generatedvoice, realvoice)
+    pathToGraph=DrawGraph(generatedvoice, realvoice)
    
     #Find some way to compare generatevoice with realvoice
     #print out the similarity
@@ -151,8 +151,9 @@ def CompareVoice(generatedvoice, realvoice):
 
     similarity = dot_product_size / (norm_sound1 * norm_sound2)
     similarity = similarity * 100
-    similarity= int(similarity)
-    print("Similarity: %"+ str(similarity))
+    similarity= str(similarity)
+    graphAndSimilarity = [pathToGraph, similarity]
+    return graphAndSimilarity
 
 
 
@@ -179,8 +180,9 @@ def DrawGraph(AIVoice, realVoice):
     plt.title("Real Audio: "+ realFileName)
     plt.ylabel('Amplitude')
     pd.Series(y2[:10000]).plot(figsize=(10,5))
-    plt.savefig("Graphs/"+AIFileName+"Versus"+realFileName+".png")
-    plt.show()
+    path = "static/Graphs/"+AIFileName+"Versus"+realFileName+".png"
+    plt.savefig(path)
+    return path
     
 
 def RemoveSpaces(stringWithSpaces):
@@ -241,10 +243,11 @@ def process():
         return redirect(url_for(destination))
     except:
         return url_for('error')#if there is a messup, go to the error page
+    
 @app.route('/generate', methods=['POST','GET'])##clicking the button with the action="{{url_for('generate')}}" goes here
 def generate():
     generateflag = False
-    voiceUrl = ""
+    AIvoiceUrl = ""
     staticUrl= ""
     try:
         inputText = request.form['input_field']
@@ -253,9 +256,8 @@ def generate():
         name = request.form['dropdown']
         VoiceSettings = elevenlabs.VoiceSettings(stability=stability,similarity_boost=similarity_boost, use_speaker_boost=True, style= 0.0)
         print("Generating a voice with "+ name)
-        voiceUrl=GenerateVoice(inputText,name,VoiceSettings)
-        staticUrl = voiceUrl.lstrip("static/")
-        print(staticUrl)
+        AIvoiceUrl=GenerateVoice(inputText,name,VoiceSettings)
+        staticUrl = AIvoiceUrl.lstrip("static/")
         generateflag = True
 
     except:
@@ -263,6 +265,34 @@ def generate():
     inputText = GetRandomPlaceholder()
     names = FetchNames()
     return render_template("generate.html", names=names,placeholder=inputText, voiceUrl=staticUrl,generateflag=generateflag)
+
+@app.route('/compare', methods=['POST','GET'])
+def compare():
+    compareflag = False
+    AIvoiceUrl = ""
+    staticUrl = ""
+    realVoiceUrl = ""
+    pathToGraph = ""##path to the graph png file
+    similarityPercent = ""
+    try:
+        inputText = request.form['input_field']#gets the value found in input_field, that's inside the form/button that executed this function.
+        stability = float(request.form['stability_slider'])
+        similarity_boost = float(request.form['similarity_boost_slider'])
+        name = request.form['dropdown']
+        realVoiceUrl = request.form['path_to_real_voice']
+        VoiceSettings = elevenlabs.VoiceSettings(stability=stability,similarity_boost=similarity_boost, use_speaker_boost=True, style= 0.0)
+        AIvoiceUrl=GenerateVoice(inputText,name,VoiceSettings)
+        graphAndSimilarity = CompareVoice(AIvoiceUrl,realVoiceUrl)
+        pathToGraph = graphAndSimilarity[0]
+        similarityPercent = graphAndSimilarity[1]
+        pathToGraph = pathToGraph.lstrip("static/")##When flask looks at paths, it considers the static folder as the home directory.
+        staticUrl = AIvoiceUrl.lstrip("static/")
+        compareflag = True
+    except:
+        print("")
+    inputText = GetRandomPlaceholder()
+    names= FetchNames()
+    return render_template("compaare.html",names=names,placeholder=inputText,voiceUrl=staticUrl,similarityPercent=similarityPercent,pathToGraph=pathToGraph,generateflag=compareflag)    
 
 if __name__ == "__main__":
     app.run(debug=True)
