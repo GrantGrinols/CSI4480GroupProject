@@ -49,19 +49,19 @@ def GenerateVoice(text, name,settings):
        
     else:
         errors.append("Voice not found. Please try again.")
-def CloneVoice():
+def CloneVoice(path,name):
     print("Please make sure the voice samples is in the audio_data/clone_data/[Name of AI voice] folder")
-    foldername=input("Insert the name you want to clone: ")
-    path = "audiodata/clonedata/"+foldername
-    clonename = MakeUniqueName(foldername,0)
-    print("My voice "+ clonename)
+    
+    name = MakeUniqueName(name,0)
+    
+    
     if os.path.exists(path) and os.path.isdir(path):
         file_list = []
         for file_name in os.listdir(path):
             print(file_name)
-            file_list.append("audiodata/clonedata/"+foldername+"/"+file_name)
+            file_list.append(path+"/"+file_name)
         elevenlabs.clone(
-            name = clonename,
+            name = name,
             description = "A new voice added to the Elevenlabs library via the Python project",
             files = file_list,
 
@@ -279,7 +279,7 @@ def compare():
         stability = float(request.form['stability_slider'])
         similarity_boost = float(request.form['similarity_boost_slider'])
         name = request.form['dropdown']
-        realVoiceUrl = request.form['path_to_real_voice']
+        realVoiceUrl = request.form['path_to_real_voice']#The path towards the real voice clip we'll use to compare
         VoiceSettings = elevenlabs.VoiceSettings(stability=stability,similarity_boost=similarity_boost, use_speaker_boost=True, style= 0.0)
         AIvoiceUrl=GenerateVoice(inputText,name,VoiceSettings)
         graphAndSimilarity = CompareVoice(AIvoiceUrl,realVoiceUrl)
@@ -293,6 +293,39 @@ def compare():
     inputText = GetRandomPlaceholder()
     names= FetchNames()
     return render_template("compaare.html",names=names,placeholder=inputText,voiceUrl=staticUrl,similarityPercent=similarityPercent,pathToGraph=pathToGraph,generateflag=compareflag)    
+
+@app.route('/clone', methods=['POST','GET'])
+def compare():
+    createcloneflag = False
+    deletecloneflag = False
+    name = ""
+    path = ""
+    names = FetchNames()
+    try:
+        decision = request.form['decision']#If decision is == "clone", create a cloned voice. If decision is == "delete", delete the voice
+        if(decision=="clone"):
+            createcloneflag = True
+        if(decision=="delete"):
+            deletecloneflag = True
+    except:
+        createcloneflag = False
+        deletecloneflag = False
+    
+    if(createcloneflag):
+        name = request.form['clonename']##Here, name will be the name of the voice to be created.
+        path = request.form['pathtofolder']#The user will have to manually paste the folder path himself. We can't do it due to security reasons.
+        CloneVoice(path,name)
+    if(deletecloneflag):
+        name = request.form['dropdown']##here, name will be selected from a dropdown box and this is the name that will be deleted.
+        RemoveVoice(name)
+    
+    return render_template("clone.html",names=names,createcloneflag=createcloneflag,deletecloneflag=deletecloneflag,name=name)
+
+
+
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
