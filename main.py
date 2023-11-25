@@ -295,7 +295,7 @@ def compare():
     return render_template("compare.html",names=names,placeholder=inputText,voiceUrl=staticUrl,similarityPercent=similarityPercent,pathToGraph=pathToGraph,generateflag=compareflag)    
 
 @app.route('/clone', methods=['POST','GET'])
-def compare():
+def clone():
     createcloneflag = False
     deletecloneflag = False
     name = ""
