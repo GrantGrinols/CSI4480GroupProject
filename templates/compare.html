@@ -17,11 +17,13 @@
 
             <button type="submit">Compare Voices</button>
         </form>
- <!-- Comparison Result -->
-        {% if compareflag %}
-            <h3>Voice comparison result:</h3>
-            <p>Similarity: {{ similarityPercent }}%</p>
-
+<!-- Comparison Result -->
+{% if compare_flag %}
+    <h3>Voice comparison result:</h3>
+    <p>Similarity: {{ similarityPercent }}%</p>
+{% else %}
+    <p>No comparison result available.</p>
+{% endif %}
            <!-- Matplotlib Graph Container -->
 <div id="matplotlib-graph">
     {% if graphs is defined %}
