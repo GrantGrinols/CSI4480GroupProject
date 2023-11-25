@@ -7,99 +7,36 @@
     <body>
         <h1>Welcome!</h1>
         <p>Hello!</p>
-
-        <!-- Voice Generation Form -->
-        <form action="{{ url_for('generate') }}" method="post">
-             <form action="{{ url_for('generate') }}" method="post">
-            <label for="dropdown">Select your AI voice</label>
-            <select id="dropdown" name="dropdown">
+        <form action="{{url_for('generate')}}" method="post">
+            <label for=""dropdown">Select your AI voice</label>
+            <select id = "dropdown" name="dropdown">
                 {% for name in names %}
                 <option value="{{ name }}">{{ name }}</option>
                 {% endfor %}
             </select>
-            <textarea id="input_field" name="input_field" rows="6" cols="50" placeholder="{{ placeholder }}"></textarea>
+            <textarea id = "input_field" name="input_field" rows="6" cols="50" placeholder="{{ placeholder }}"></textarea>
             <label for="stability_slider">Choose Stability</label>
-            <input type="range" id="stability_slider" name="stability_slider" min="0" max="1" step="0.01" value="0.75" oninput="updateSliderValue(this.value, 0)">
+            <input type="range" id="stability_slider" name="stability_slider" min="0" max="1" step="0.01" value="0.75" oninput="updateSliderValue(this.value,0)">
             <span id="slidervalue0">0.75</span>
-            <label for="similarity_boost_slider">Choose Similarity Boost</label>
-            <input type="range" id="similarity_boost_slider" name="similarity_boost_slider" min="0" max="1" step="0.01" value="0.5" oninput="updateSliderValue(this.value, 1)">
+            <label for = "similarity_boost_slider">Choose Similiarity Boost</label>
+            <input type="range" id="similarity_boost_slider" name="similarity_boost_slider" min="0" max="1" step="0.01" value="0.5" oninput="updateSliderValue(this.value,1)">
             <span id="slidervalue1">0.50</span>
             <button type="submit">Generate Text-To-Speech</button>
         </form>
-
-        <!-- Voice Comparison Form -->
-        <form action="{{ url_for('compare') }}" method="post">
-            <label for="real_voice">Enter Real Voice Clip</label>
-            <input type="file" id="real_voice" name="real_voice" accept="audio/*" required>
-            
-            <label for="ai_voice">Enter AI Voice Clip to Compare</label>
-            <input type="file" id="ai_voice" name="ai_voice" accept="audio/*" required>
-
-            <button type="submit">Compare Voices</button>
-        </form>
-
-        <!-- Comparison Result -->
-        {% if compareflag %}
-            <h3>Voice comparison result:</h3>
-            <p>Similarity: {{ similarityPercent }}%</p>
-
-            <!-- Matplotlib Graph Container -->
-            <div id="matplotlib-graph">
-                <img src="{{ url_for('static', filename=pathToGraph) }}" alt="Voice Comparison Graph">
-            </div>
-        {% endif %}
-
-        <!-- Voice Generation Result -->
-            {% if generateflag %}
+        {% if generateflag %}
         <h3>Voice generation successful! The voice clip is already saved under the static/AIclips folder.</h3>
         <audio controls autoplay>
-            <source src="{{ url_for('static', filename=voiceUrl) }}" type="audio/wav">
+            <source src="{{url_for('static',filename=voiceUrl) }}" type="audio/wav">
             Your browser does not support this file type.
         </audio>
         {% endif %}
-        <!-- Clone Voice Form -->
-        <form action="{{ url_for('clone') }}" method="post">
-            <label for="decision">Decision:</label>
-            <select id="decision" name="decision">
-                <option value="clone">Clone Voice</option>
-                <option value="delete">Delete Voice</option>
-            </select>
-
-            <!-- Fields for Cloning -->
-            <div id="clone-fields" style="display: none;">
-                <label for="clonename">Clone Name:</label>
-                <input type="text" id="clonename" name="clonename">
-
-                <label for="pathtofolder">Path to Folder:</label>
-                <input type="text" id="pathtofolder" name="pathtofolder">
-            </div>
-
-            <!-- Fields for Deleting -->
-            <div id="delete-fields" style="display: none;">
-                <label for="dropdown">Select Voice to Delete:</label>
-                <select id="dropdown" name="dropdown">
-                    {% for name in names %}
-                        <option value="{{ name }}">{{ name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <button type="submit">Submit</button>
-        </form>
 
         <script>
-            // Script to show/hide fields based on the decision
-            document.getElementById('decision').addEventListener('change', function() {
-                var decision = this.value;
-                document.getElementById('clone-fields').style.display = decision === 'clone' ? 'block' : 'none';
-                document.getElementById('delete-fields').style.display = decision === 'delete' ? 'block' : 'none';
-            });
-        </script>
-
-        <script>
-            function updateSliderValue(val, id) {
-                document.getElementById('slidervalue' + id).innerText = val;
+            function updateSliderValue(val, id){
+                document.getElementById('slidervalue'+id).innerText = val;
             }
+
         </script>
     </body>
 </html>
+    
