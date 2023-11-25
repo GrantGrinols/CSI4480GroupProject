@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Mimicry</title>
-    <style>
-        body {
+   body {
             margin: 0;
             padding: 0;
             background: url("ai-with-voice-new.png") center/cover no-repeat; /* Replace 'your-background-image.jpg' with your actual image file */
@@ -39,12 +32,4 @@
         .url-button:hover {
             background-color: red;
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>AI Mimicry</h1>
     
-    </div>
-</body>
-</html>
