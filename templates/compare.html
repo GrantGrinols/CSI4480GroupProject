@@ -22,11 +22,14 @@
             <h3>Voice comparison result:</h3>
             <p>Similarity: {{ similarityPercent }}%</p>
 
-            <!-- Matplotlib Graph Container -->
-            <div id="matplotlib-graph">
-                <img src="{{ url_for('static', filename=Graphs) }}" alt="Voice Comparison Graph">
-            </div>
-        {% endif %}
+           <!-- Matplotlib Graph Container -->
+<div id="matplotlib-graph">
+    {% if graphs is defined %}
+        <img src="{{ url_for('static', filename=graphs) }}" alt="Voice Comparison Graph">
+    {% else %}
+        <p>No graph available.</p>
+    {% endif %}
+</div>
        <script>
             function updateSliderValue(val, id){
                 document.getElementById('slidervalue'+id).innerText = val;
