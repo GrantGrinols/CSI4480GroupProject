@@ -6,11 +6,29 @@
     </head>
     <body>
         <h1>Welcome!</h1>
-        <div><form action="{{url_for('process')}}" method="post">
-            <input type="hidden" id="destination" name="destination" value="generate">
-            <button type="submit" class="url-button">Generate</button>
+        <div>
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="home">
+                <button type="submit" class="url-button">Home</button>
+            </form>
+
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="generate">
+                <button type="submit" class="url-button">Generate</button>
+            </form>
+
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="compare">
+                <button type="submit" class="url-button">Compare</button>
+            </form>
+
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="clone">
+                <button type="submit" class="url-button">Clone</button>
+            </form>
+
             <input type="hidden" id="key_field" name="key_field" value="">
-        </form> </div>
+        </div>
         
             <p>Hello and welcome to the AI mimicry project for CSI 4480!</p>
             <p>This project focuses on how easy it is to replicate a voice using the right tools, and to prove how good of a job this replication is.</p>
