@@ -1,1 +1,38 @@
+!DOCTYPE html>
+<html>
+    <head>
+        <title>CSI 4480 Project</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='CSS/global.css')}}">
+    </head>
+    <body>
+        <h1>Welcome!</h1>
+        <p>Hello!</p>
+ <!-- Voice Comparison Form -->
+        <form action="{{ url_for('compare') }}" method="post">
+            <label for="real_voice">Enter Real Voice Clip</label>
+            <input type="file" id="real_voice" name="real_voice" accept="audio/*" required>
+            
+            <label for="ai_voice">Enter AI Voice Clip to Compare</label>
+            <input type="file" id="ai_voice" name="ai_voice" accept="audio/*" required>
+
+            <button type="submit">Compare Voices</button>
+        </form>
+ <!-- Comparison Result -->
+        {% if compareflag %}
+            <h3>Voice comparison result:</h3>
+            <p>Similarity: {{ similarityPercent }}%</p>
+
+            <!-- Matplotlib Graph Container -->
+            <div id="matplotlib-graph">
+                <img src="{{ url_for('static', filename=pathToGraph) }}" alt="Voice Comparison Graph">
+            </div>
+        {% endif %}
+       <script>
+            function updateSliderValue(val, id){
+                document.getElementById('slidervalue'+id).innerText = val;
+            }
+
+        </script>
+    </body>
+</html>
 
