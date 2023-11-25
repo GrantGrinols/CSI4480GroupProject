@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSI 4480 Project</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='CSS/global.css')}}">
+    </head>
+    <body>
+        <h1>Welcome!</h1>
+        <p>Hello!</p><!-- Clone Voice Form -->
+        <form action="{{ url_for('clone') }}" method="post">
+            <label for="decision">Decision:</label>
+            <select id="decision" name="decision">
+                <option value="clone">Clone Voice</option>
+                <option value="delete">Delete Voice</option>
+            </select>
+
+            <!-- Fields for Cloning -->
+            <div id="clone-fields" style="display: none;">
+                <label for="clonename">Clone Name:</label>
+                <input type="text" id="clonename" name="clonename">
+
+                <label for="pathtofolder">Path to Folder:</label>
+                <input type="text" id="pathtofolder" name="pathtofolder">
+            </div>
+
+            <!-- Fields for Deleting -->
+            <div id="delete-fields" style="display: none;">
+                <label for="dropdown">Select Voice to Delete:</label>
+                <select id="dropdown" name="dropdown">
+                    {% for name in names %}
+                        <option value="{{ name }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <script>
+            // Script to show/hide fields based on the decision
+            document.getElementById('decision').addEventListener('change', function() {
+                var decision = this.value;
+                document.getElementById('clone-fields').style.display = decision === 'clone' ? 'block' : 'none';
+                document.getElementById('delete-fields').style.display = decision === 'delete' ? 'block' : 'none';
+            });
+        </script>
+
+        <script>
+            function updateSliderValue(val, id) {
+                document.getElementById('slidervalue' + id).innerText = val;
+            }
+        </script>
+    </body>
+</html>
