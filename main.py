@@ -292,7 +292,7 @@ def compare():
         print("")
     inputText = GetRandomPlaceholder()
     names= FetchNames()
-    return render_template("compaare.html",names=names,placeholder=inputText,voiceUrl=staticUrl,similarityPercent=similarityPercent,pathToGraph=pathToGraph,generateflag=compareflag)    
+    return render_template("compare.html",names=names,placeholder=inputText,voiceUrl=staticUrl,similarityPercent=similarityPercent,pathToGraph=pathToGraph,generateflag=compareflag)    
 
 @app.route('/clone', methods=['POST','GET'])
 def compare():
