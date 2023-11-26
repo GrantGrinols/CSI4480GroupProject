@@ -13,6 +13,7 @@
         <a href="{{ url_for('clone') }}" class="url-button">Clone</a>
     </div>
         <h1>Welcome!</h1>
+        <form action="{{ url_for('compare') }}" method="post">
         <p>Hello!</p>
  <!-- Voice Comparison Form -->
         <form action="{{ url_for('compare') }}" method="post">
@@ -31,6 +32,7 @@
 {% else %}
     <p>No comparison result available.</p>
 {% endif %}
+            </form>
            <!-- Matplotlib Graph Container -->
 <div id="matplotlib-graph">
     {% if graphs is defined %}
