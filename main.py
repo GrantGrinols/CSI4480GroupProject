@@ -1,5 +1,4 @@
 import elevenlabs
-import wave
 import json
 import librosa
 import pandas as pd
@@ -157,7 +156,8 @@ def CompareVoice(generatedvoice, realvoice):
 
 
 
-def DrawGraph(AIVoice, realVoice): 
+def DrawGraph(AIVoice, realVoice):
+    plt.cla()
     #print out the graph of each voice
     y1, sr1 = librosa.load(AIVoice)
     y2, sr2 = librosa.load(realVoice)
@@ -182,6 +182,8 @@ def DrawGraph(AIVoice, realVoice):
     pd.Series(y2[:10000]).plot(figsize=(10,5))
     path = "static/Graphs/"+AIFileName+"Versus"+realFileName+".png"
     plt.savefig(path)
+    plt.close()
+    
     return path
     
 
@@ -213,7 +215,6 @@ def GetRandomPlaceholder():
                   "This sentence costed you a fraction of a coin! Thank you for your patronage.",
                   "He's checking his list. Checking it twice. \nHe's checking whether you've been naughty or nice. \nAnnnyii Liu is coming to town!"]
     chosenstring = random.choice(RandomList)
-    print(chosenstring)
     return chosenstring
 
 print("Hello, and welcome to the AI voice mimic! Starting up web page...")
@@ -249,11 +250,22 @@ def generate():
     generateflag = False
     AIvoiceUrl = ""
     staticUrl= ""
+    errormessage = ""
+    errorflag = False
     try:
         inputText = request.form['input_field']
         stability = float(request.form['stability_slider'])
         similarity_boost = float(request.form['similarity_boost_slider'])
         name = request.form['dropdown']
+        if(inputText==""):
+            errormessage = "You must enter text"
+            errorflag = True
+            raise "You must enter text"
+               
+        if(elevenlabs.get_api_key()==None):
+            errormessage = "You must set the API key to use this application. Go back to home."
+            errorflag = True
+            raise "You must set the API key to use this application. Go back to home."
         VoiceSettings = elevenlabs.VoiceSettings(stability=stability,similarity_boost=similarity_boost, use_speaker_boost=True, style= 0.0)
         print("Generating a voice with "+ name)
         AIvoiceUrl=GenerateVoice(inputText,name,VoiceSettings)
@@ -261,10 +273,12 @@ def generate():
         generateflag = True
 
     except:
-        print("")
+        errorflag = True
+        if(errormessage == ""):
+            errormessage = "An error has occured, and we aren't sure why this has happened. If you're reading this, please contact the developers."
     inputText = GetRandomPlaceholder()
     names = FetchNames()
-    return render_template("generate.html", names=names,placeholder=inputText, voiceUrl=staticUrl,generateflag=generateflag)
+    return render_template("generate.html", names=names,placeholder=inputText, voiceUrl=staticUrl,generateflag=generateflag, errormessage = errormessage, errorflag = errorflag)
 
 @app.route('/compare', methods=['POST','GET'])
 def compare():
@@ -274,25 +288,46 @@ def compare():
     realVoiceUrl = ""
     pathToGraph = ""##path to the graph png file
     similarityPercent = ""
+    errormessage = ""
+    errorflag = False
     try:
         inputText = request.form['input_field']#gets the value found in input_field, that's inside the form/button that executed this function.
         stability = float(request.form['stability_slider'])
         similarity_boost = float(request.form['similarity_boost_slider'])
         name = request.form['dropdown']
+        if(elevenlabs.get_api_key()==None):
+            errormessage = "You must set the API key to use this application. Go back to home."
+            errorflag = True
+            raise  "You must set the API key to use this application. Go back to home."
+        
         realVoiceUrl = request.form['path_to_real_voice']#The path towards the real voice clip we'll use to compare
         VoiceSettings = elevenlabs.VoiceSettings(stability=stability,similarity_boost=similarity_boost, use_speaker_boost=True, style= 0.0)
+        if(inputText==""):
+            errormessage = "You must enter text"
+            errorflag = True
+            raise "You must enter text"
+        if(os.path.exists(realVoiceUrl)):
+            errormessage = "You did not enter a valid path"
+            errorflag = True
+            raise "You must enter a valid path"
         AIvoiceUrl=GenerateVoice(inputText,name,VoiceSettings)
+
         graphAndSimilarity = CompareVoice(AIvoiceUrl,realVoiceUrl)
+
         pathToGraph = graphAndSimilarity[0]
         similarityPercent = graphAndSimilarity[1]
         pathToGraph = pathToGraph.lstrip("static/")##When flask looks at paths, it considers the static folder as the home directory.
         staticUrl = AIvoiceUrl.lstrip("static/")
         compareflag = True
     except:
-        print("")
+        errorflag = True
+        if(errormessage == ""):
+            errormessage = "An error has occured, and we aren't sure why this happened. If you're reading this, please contact the developers."
+
+
     inputText = GetRandomPlaceholder()
     names= FetchNames()
-    return render_template("compare.html",names=names,placeholder=inputText,voiceUrl=staticUrl,similarityPercent=similarityPercent,pathToGraph=pathToGraph,generateflag=compareflag)    
+    return render_template("compare.html",names=names,placeholder=inputText,voiceUrl=staticUrl,similarityPercent=similarityPercent,pathToGraph=pathToGraph,compareflag=compareflag, errormessage = errormessage, errorflag = errorflag)    
 
 @app.route('/clone', methods=['POST','GET'])
 def clone():
@@ -320,8 +355,6 @@ def clone():
         RemoveVoice(name)
     
     return render_template("clone.html",names=names,createcloneflag=createcloneflag,deletecloneflag=deletecloneflag,name=name)
-
-
 
 
 

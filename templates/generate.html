@@ -7,6 +7,28 @@
     <body>
         <h1>Welcome!</h1>
         <p>Hello!</p>
+        <div>
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="home">
+                <button type="submit" class="url-button">Home</button>
+            </form>
+
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="generate">
+                <button type="submit" class="url-button">Generate</button>
+            </form>
+
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="compare">
+                <button type="submit" class="url-button">Compare</button>
+            </form>
+
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="clone">
+                <button type="submit" class="url-button">Clone</button>
+            </form>
+        </div>
+        
         <form action="{{url_for('generate')}}" method="post">
             <label for=""dropdown">Select your AI voice</label>
             <select id = "dropdown" name="dropdown">
@@ -29,6 +51,12 @@
             <source src="{{url_for('static',filename=voiceUrl) }}" type="audio/wav">
             Your browser does not support this file type.
         </audio>
+        {% else %}
+        <p>Your results will appear here:</p>
+        {% endif %}
+        {% if errorflag %}
+        <h3>An error has occured</h3>
+        <p> Error: {{errormessage}}</p>
         {% endif %}
 
         <script>
