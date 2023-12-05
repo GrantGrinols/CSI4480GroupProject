@@ -32,4 +32,8 @@
         .url-button:hover {
             background-color: red;
         }
+#nav_bar .nav_button{
+    display: inline-block;
+    list-style-type: none;
+}
     

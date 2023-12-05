@@ -7,26 +7,32 @@
     <body>
         <h1>Welcome!</h1>
         <div>
+            <ul id="nav_bar">
+            <li class ="nav_button">
             <form action="{{url_for('process')}}" method="post">
                 <input type="hidden" id="destination" name="destination" value="home">
                 <button type="submit" class="url-button">Home</button>
             </form>
-
+        </li>
+        <li class ="nav_button"> 
             <form action="{{url_for('process')}}" method="post">
                 <input type="hidden" id="destination" name="destination" value="generate">
                 <button type="submit" class="url-button">Generate</button>
             </form>
-
+        </li>
+        <li class ="nav_button">
             <form action="{{url_for('process')}}" method="post">
                 <input type="hidden" id="destination" name="destination" value="compare">
                 <button type="submit" class="url-button">Compare</button>
             </form>
-
+        </li>
+        <li class ="nav_button">
             <form action="{{url_for('process')}}" method="post">
                 <input type="hidden" id="destination" name="destination" value="clone">
                 <button type="submit" class="url-button">Clone</button>
             </form>
-
+        </li>
+            </ul>
             <input type="hidden" id="key_field" name="key_field" value="">
         </div>
         
@@ -34,7 +40,7 @@
             <p>This project focuses on how easy it is to replicate a voice using the right tools, and to prove how good of a job this replication is.</p>
             <p>First things first, please enter your API Key. If your key is already set in the code by setting a json file as "APIKEY" : [Your Key] and naming your file APIKey.json file, ignore this step</p>
             <label for="input_field">Enter Key:</label>
-            <input type="text" id="our_key_field" name=our_key_field">
+            <input type="text" id="our_key_field" name=our_key_field>
             <p>Once your APIKey is set, click on any button in the url banner to begin!</p>
 
             <script>
