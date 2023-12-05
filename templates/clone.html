@@ -6,49 +6,50 @@
     </head>
     <body>
         <h1>Welcome!</h1>
-        <p>Hello!</p><!-- Clone Voice Form -->
+        <p>Hello!</p>
+        <!-- Fields for Cloning -->
+    <div>
+        <div>
         <form action="{{ url_for('clone') }}" method="post">
-            <label for="decision">Decision:</label>
-            <select id="decision" name="decision">
-                <option value="clone">Clone Voice</option>
-                <option value="delete">Delete Voice</option>
-            </select>
+            
+            <input type="hidden" name="decision" id="decision" value="clone">
 
-            <!-- Fields for Cloning -->
-            <div id="clone-fields" style="display: none;">
+            <p>Create your clone here! Enter the name of the clone and the relevant path to the training data.</p>
+            <div id="clone-fields">
                 <label for="clonename">Clone Name:</label>
                 <input type="text" id="clonename" name="clonename">
 
-                <label for="pathtofolder">Path to Folder:</label>
+                <label for="pathtofolder">Path to training data folder:</label>
                 <input type="text" id="pathtofolder" name="pathtofolder">
             </div>
-
+            <button type="submit">Create Clone</button>
+        </form>
+    </div>
+    <div>
             <!-- Fields for Deleting -->
-            <div id="delete-fields" style="display: none;">
+            <form action="{{ url_for('clone')}}" method="post">
+                <input type="hidden" name="decision" id="decision" value="delete">
+            <p>Delete your voice here! It is permenant</p>
+            <div id="delete-fields">
                 <label for="dropdown">Select Voice to Delete:</label>
                 <select id="dropdown" name="dropdown">
                     {% for name in names %}
                         <option value="{{ name }}">{{ name }}</option>
                     {% endfor %}
                 </select>
+                <button type="submit">Delete Clone</button>
             </div>
+            </form>
+    </div>
+    <div>
+        
 
-            <button type="submit">Submit</button>
-        </form>
+    </div>
+</div>
 
-        <script>
-            // Script to show/hide fields based on the decision
-            document.getElementById('decision').addEventListener('change', function() {
-                var decision = this.value;
-                document.getElementById('clone-fields').style.display = decision === 'clone' ? 'block' : 'none';
-                document.getElementById('delete-fields').style.display = decision === 'delete' ? 'block' : 'none';
-            });
-        </script>
+            
+        
 
-        <script>
-            function updateSliderValue(val, id) {
-                document.getElementById('slidervalue' + id).innerText = val;
-            }
-        </script>
+
     </body>
 </html>

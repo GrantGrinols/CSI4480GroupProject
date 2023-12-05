@@ -335,6 +335,8 @@ def clone():
     deletecloneflag = False
     name = ""
     path = ""
+    errorflag = False
+    errormessage = ""
     names = FetchNames()
     try:
         decision = request.form['decision']#If decision is == "clone", create a cloned voice. If decision is == "delete", delete the voice
@@ -345,14 +347,22 @@ def clone():
     except:
         createcloneflag = False
         deletecloneflag = False
-    
-    if(createcloneflag):
-        name = request.form['clonename']##Here, name will be the name of the voice to be created.
-        path = request.form['pathtofolder']#The user will have to manually paste the folder path himself. We can't do it due to security reasons.
-        CloneVoice(path,name)
-    if(deletecloneflag):
-        name = request.form['dropdown']##here, name will be selected from a dropdown box and this is the name that will be deleted.
-        RemoveVoice(name)
+    try:
+        if(createcloneflag):
+            name = request.form['clonename']##Here, name will be the name of the voice to be created.
+            path = request.form['pathtofolder']#The user will have to manually paste the folder path himself. We can't do it due to security reasons.
+            CloneVoice(path,name)
+            if(name==""or name == None):
+                createcloneflag = False
+                errorflag = True
+                errormessage = "You must enter a name of the clone"
+                raise "You must enter a name of the clone"
+        if(deletecloneflag):
+            name = request.form['dropdown']##here, name will be selected from a dropdown box and this is the name that will be deleted.
+            RemoveVoice(name)
+            
+    except:
+        errorflag = False
     
     return render_template("clone.html",names=names,createcloneflag=createcloneflag,deletecloneflag=deletecloneflag,name=name)
 
