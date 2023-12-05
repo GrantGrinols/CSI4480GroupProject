@@ -36,4 +36,8 @@
     display: inline-block;
     list-style-type: none;
 }
+
+.bold-text{
+    font-weight: bold;
+}
     

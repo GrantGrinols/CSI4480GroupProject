@@ -14,7 +14,7 @@
             
             <input type="hidden" name="decision" id="decision" value="clone">
 
-            <p>Create your clone here! Enter the name of the clone and the relevant path to the training data.</p>
+            <p>Create your clone here! Enter the name of the clone and the <span class="bold-text">relative</span> path to the training data.</p>
             <div id="clone-fields">
                 <label for="clonename">Clone Name:</label>
                 <input type="text" id="clonename" name="clonename">
@@ -42,7 +42,25 @@
             </form>
     </div>
     <div>
+        {% if createcloneflag or deletecloneflag or errorflag %}
+
+        {% if createcloneflag %}
+        <p>Created clone successfully! Name: {name}</p>
+        {% endif %}
         
+        {% if deletecloneflag %}
+        <p>Deleted Clone. Goodbye {name}!</p>
+
+        {% else %}
+        <p>Your Results will appear here:</p>
+
+        {% endif %}
+        {% endif %}
+
+        {% if errorflag %}
+        <h3>An error has occured</h3>
+        <p>Error: {{errormessage}}</p>
+        {% endif %}
 
     </div>
 </div>

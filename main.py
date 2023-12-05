@@ -337,7 +337,7 @@ def clone():
     path = ""
     errorflag = False
     errormessage = ""
-    names = FetchNames()
+    
     try:
         decision = request.form['decision']#If decision is == "clone", create a cloned voice. If decision is == "delete", delete the voice
         if(decision=="clone"):
@@ -347,26 +347,39 @@ def clone():
     except:
         createcloneflag = False
         deletecloneflag = False
-    try:
-        if(createcloneflag):
-            name = request.form['clonename']##Here, name will be the name of the voice to be created.
-            path = request.form['pathtofolder']#The user will have to manually paste the folder path himself. We can't do it due to security reasons.
-            CloneVoice(path,name)
-            if(name==""or name == None):
-                createcloneflag = False
+    if(createcloneflag or deletecloneflag):
+        try:
+            if(elevenlabs.get_api_key()==None):
                 errorflag = True
-                errormessage = "You must enter a name of the clone"
-                raise "You must enter a name of the clone"
-        if(deletecloneflag):
-            name = request.form['dropdown']##here, name will be selected from a dropdown box and this is the name that will be deleted.
-            RemoveVoice(name)
+                errormessage = "You must set the API key to use this application. Go back to home."
+                raise "You must set the API key to use this application. Go back to home."
             
-    except:
-        errorflag = False
+            if(createcloneflag):
+                name = request.form['clonename']##Here, name will be the name of the voice to be created.
+                path = request.form['pathtofolder']#The user will have to manually paste the folder path himself. We can't do it due to security reasons.
+                CloneVoice(path,name)
+                if(name==""or name == None):
+                    errorflag = True
+                    errormessage = "You must enter a name of the clone"
+                    raise "You must enter a name of the clone"
+            if(deletecloneflag):
+                name = request.form['dropdown']##here, name will be selected from a dropdown box and this is the name that will be deleted.
+                RemoveVoice(name)
+            
+        except:
+            createcloneflag = False
+            deletecloneflag = False
+            errorflag = True
+            if(errormessage==""):
+                errormessage = "An error has occured, and we aren't sure why this happened. If you're reading this, please contact the developers."
+
+            
+
+    names = FetchNames()
     
-    return render_template("clone.html",names=names,createcloneflag=createcloneflag,deletecloneflag=deletecloneflag,name=name)
+    return render_template("clone.html",names=names,createcloneflag=createcloneflag,deletecloneflag=deletecloneflag,name=name, errormessage = errormessage, errorflag = errorflag)
 
-
+{}
 
 
 
