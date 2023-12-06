@@ -3,12 +3,15 @@ import json
 import librosa
 import pandas as pd
 import matplotlib.pylab as plt
+import matplotlib
 import librosa.display
 from resemblyzer import VoiceEncoder,preprocess_wav
 import numpy as np
 import os
 from flask import Flask, redirect, url_for, render_template, request
 import random
+
+matplotlib.use('agg')
 
 KEY = "None"
 if(os.path.exists("APIKey.json")):
@@ -291,10 +294,12 @@ def compare():
     errormessage = ""
     errorflag = False
     try:
+        
         inputText = request.form['input_field']#gets the value found in input_field, that's inside the form/button that executed this function.
         stability = float(request.form['stability_slider'])
         similarity_boost = float(request.form['similarity_boost_slider'])
         name = request.form['dropdown']
+        compareflag = True
         if(elevenlabs.get_api_key()==None):
             errormessage = "You must set the API key to use this application. Go back to home."
             errorflag = True
@@ -306,8 +311,8 @@ def compare():
             errormessage = "You must enter text"
             errorflag = True
             raise "You must enter text"
-        if(os.path.exists(realVoiceUrl)):
-            errormessage = "You did not enter a valid path"
+        if(not(os.path.exists(realVoiceUrl))):
+            errormessage = "Path not found."
             errorflag = True
             raise "You must enter a valid path"
         AIvoiceUrl=GenerateVoice(inputText,name,VoiceSettings)
@@ -318,11 +323,13 @@ def compare():
         similarityPercent = graphAndSimilarity[1]
         pathToGraph = pathToGraph.lstrip("static/")##When flask looks at paths, it considers the static folder as the home directory.
         staticUrl = AIvoiceUrl.lstrip("static/")
-        compareflag = True
+        
     except:
-        errorflag = True
-        if(errormessage == ""):
-            errormessage = "An error has occured, and we aren't sure why this happened. If you're reading this, please contact the developers."
+        if(compareflag):
+            compareflag = False
+            errorflag = True
+            if(errormessage == ""):
+                errormessage = "An error has occured, and we aren't sure why this happened. If you're reading this, please contact the developers."
 
 
     inputText = GetRandomPlaceholder()
@@ -357,11 +364,17 @@ def clone():
             if(createcloneflag):
                 name = request.form['clonename']##Here, name will be the name of the voice to be created.
                 path = request.form['pathtofolder']#The user will have to manually paste the folder path himself. We can't do it due to security reasons.
-                CloneVoice(path,name)
                 if(name==""or name == None):
                     errorflag = True
                     errormessage = "You must enter a name of the clone"
                     raise "You must enter a name of the clone"
+                if(not(os.path.exists(path))):
+                    errorflag = True
+                    errormessage = "Path not found."
+                    raise "You must enter a valid path"
+                                
+                CloneVoice(path,name)
+
             if(deletecloneflag):
                 name = request.form['dropdown']##here, name will be selected from a dropdown box and this is the name that will be deleted.
                 RemoveVoice(name)
