@@ -15,6 +15,7 @@
             <input type="hidden" name="decision" id="decision" value="clone">
 
             <p>Create your clone here! Enter the name of the clone and the <span class="bold-text">relative</span> path to the training data.</p>
+            <p>This may take a while...</p>
             <div id="clone-fields">
                 <label for="clonename">Clone Name:</label>
                 <input type="text" id="clonename" name="clonename">
@@ -45,11 +46,11 @@
         {% if createcloneflag or deletecloneflag or errorflag %}
 
         {% if createcloneflag %}
-        <p>Created clone successfully! Name: {name}</p>
+        <p>Created clone successfully! Name: {{name}}</p>
         {% endif %}
         
         {% if deletecloneflag %}
-        <p>Deleted Clone. Goodbye {name}!</p>
+        <p>Deleted Clone. Goodbye {{name}}!</p>
         {% endif %}
         {% else %}
         <p>Your Results will appear here:</p>
