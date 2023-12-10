@@ -40,4 +40,25 @@
 .bold-text{
     font-weight: bold;
 }
-    
+header{
+    display: block;
+    background-color: darkgray;
+    margin: 0px;
+    height: 200px;
+}
+article{
+    display: block;
+    background-color: brown;
+}
+body{
+    background-color: beige;
+}
+
+.CD{
+    display: block;
+    background-color: brown;
+    margin-top: 50px;
+}
+.BG{
+    background-color: lightslategray;
+}

@@ -4,10 +4,41 @@
         <title>CSI 4480 Project</title>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='CSS/global.css')}}">
     </head>
-    <body>
+    <header>
         <h1>Welcome!</h1>
-        <p>Hello!</p>
+        <div>
+            <ul id="nav_bar">
+            <li class ="nav_button">
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="home">
+                <button type="submit" class="url-button">Home</button>
+            </form>
+        </li>
+        <li class ="nav_button"> 
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="generate">
+                <button type="submit" class="url-button">Generate</button>
+            </form>
+        </li>
+        <li class ="nav_button">
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="compare">
+                <button type="submit" class="url-button">Compare</button>
+            </form>
+        </li>
+        <li class ="nav_button">
+            <form action="{{url_for('process')}}" method="post">
+                <input type="hidden" id="destination" name="destination" value="clone">
+                <button type="submit" class="url-button">Clone</button>
+            </form>
+        </li>
+            </ul>
+            <input type="hidden" id="key_field" name="key_field" value="">
+        </div>
+    </header>
+    <body>
         <!-- Fields for Cloning -->
+        <article>
     <div>
         <div>
         <form action="{{ url_for('clone') }}" method="post">
@@ -63,7 +94,7 @@
 
     </div>
 </div>
-
+</article>
             
         
 

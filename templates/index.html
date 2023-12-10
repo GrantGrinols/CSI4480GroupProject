@@ -4,7 +4,7 @@
         <title>CSI 4480 Project</title>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='CSS/global.css')}}">
     </head>
-    <body>
+    <header>
         <h1>Welcome!</h1>
         <div>
             <ul id="nav_bar">
@@ -35,13 +35,16 @@
             </ul>
             <input type="hidden" id="key_field" name="key_field" value="">
         </div>
-        
+    </header>
+    <body>
+        <article>
             <p>Hello and welcome to the AI mimicry project for CSI 4480!</p>
             <p>This project focuses on how easy it is to replicate a voice using the right tools, and to prove how good of a job this replication is.</p>
             <p>First things first, please enter your API Key. If your key is already set in the code by setting a json file as "APIKEY" : [Your Key] and naming your file APIKey.json file, ignore this step</p>
             <label for="input_field">Enter Key:</label>
             <input type="text" id="our_key_field" name=our_key_field>
             <p>Once your APIKey is set, click on any button in the url banner to begin!</p>
+        </article>
 
             <script>
             document.addEventListener('DOMContentLoaded', function(){//when everything on the html is loaded, execution this function

@@ -14,6 +14,7 @@ import random
 matplotlib.use('agg')
 
 KEY = "None"
+
 if(os.path.exists("APIKey.json")):
     jsonFile = open("APIKey.json")
     key = json.load(jsonFile)

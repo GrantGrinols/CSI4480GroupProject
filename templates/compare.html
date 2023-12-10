@@ -4,53 +4,62 @@
         <title>CSI 4480 Project</title>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='CSS/global.css')}}">
     </head>
-    <body>
-    </div>
+    <header>
         <h1>Welcome!</h1>
         <div>
+            <ul id="nav_bar">
+            <li class ="nav_button">
             <form action="{{url_for('process')}}" method="post">
                 <input type="hidden" id="destination" name="destination" value="home">
                 <button type="submit" class="url-button">Home</button>
             </form>
-
+        </li>
+        <li class ="nav_button"> 
             <form action="{{url_for('process')}}" method="post">
                 <input type="hidden" id="destination" name="destination" value="generate">
                 <button type="submit" class="url-button">Generate</button>
             </form>
-
+        </li>
+        <li class ="nav_button">
             <form action="{{url_for('process')}}" method="post">
                 <input type="hidden" id="destination" name="destination" value="compare">
                 <button type="submit" class="url-button">Compare</button>
             </form>
-
+        </li>
+        <li class ="nav_button">
             <form action="{{url_for('process')}}" method="post">
                 <input type="hidden" id="destination" name="destination" value="clone">
                 <button type="submit" class="url-button">Clone</button>
             </form>
-
+        </li>
+            </ul>
+            <input type="hidden" id="key_field" name="key_field" value="">
         </div>
+    </header>
+    <body>
+ 
         
  <!-- Voice Comparison Form -->
-        <form action="{{ url_for('compare') }}" method="post">
-            <label for=""dropdown">Select your AI voice</label>
+        <form action="{{ url_for('compare') }}" method="post" class="CD">
+            <label for=""dropdown>Select your AI voice</label>
             <select id = "dropdown" name="dropdown">
                 {% for name in names %}
                 <option value="{{ name }}">{{ name }}</option>
                 {% endfor %}
-            </select>
-            <textarea id = "input_field" name="input_field" rows="6" cols="50" placeholder="{{ placeholder }}"></textarea>
+            </select><br><br>
+            <textarea id = "input_field" name="input_field" rows="6" cols="50" placeholder="{{ placeholder }}" class = "BG"></textarea><br>
             <label for="stability_slider">Choose Stability</label>
             <input type="range" id="stability_slider" name="stability_slider" min="0" max="1" step="0.01" value="0.75" oninput="updateSliderValue(this.value,0)">
             <span id="slidervalue0">0.75</span>
             <label for = "similarity_boost_slider">Choose Similiarity Boost</label>
             <input type="range" id="similarity_boost_slider" name="similarity_boost_slider" min="0" max="1" step="0.01" value="0.5" oninput="updateSliderValue(this.value,1)">
-            <span id="slidervalue1">0.50</span>
+            <span id="slidervalue1">0.50</span><br>
 
             <label for="real_voice">Enter the <span class="bold-text">relative</span> path to the real voice clip for comparison (/static/audiodata[name of file]):</label>
-            <input type="text" id="path_to_real_voice" name="path_to_real_voice">
+            <input type="text" id="path_to_real_voice" name="path_to_real_voice" class ="BG">
             
 
-            <button type="submit" id="comparebutton">Compare Voices</button>
+            <button type="submit" id="comparebutton" class="BG">Compare Voices</button>
         </form>
 <!-- Comparison Result -->
 {% if compareflag %}
