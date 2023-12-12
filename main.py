@@ -261,6 +261,7 @@ def generate():
         stability = float(request.form['stability_slider'])
         similarity_boost = float(request.form['similarity_boost_slider'])
         name = request.form['dropdown']
+        
         if(inputText==""):
             errormessage = "You must enter text"
             errorflag = True
@@ -270,15 +271,18 @@ def generate():
             errormessage = "You must set the API key to use this application. Go back to home."
             errorflag = True
             raise "You must set the API key to use this application. Go back to home."
+        generateflag = True
         VoiceSettings = elevenlabs.VoiceSettings(stability=stability,similarity_boost=similarity_boost, use_speaker_boost=True, style= 0.0)
         print("Generating a voice with "+ name)
         AIvoiceUrl=GenerateVoice(inputText,name,VoiceSettings)
         staticUrl = AIvoiceUrl.lstrip("static/")
-        generateflag = True
+        
 
     except:
-        errorflag = True
-        if(errormessage == ""):
+        if(generateflag):
+            errorflag = True
+            generateflag = False
+        if(errormessage == "" and errorflag == True):
             errormessage = "An error has occured, and we aren't sure why this has happened. If you're reading this, please contact the developers."
     inputText = GetRandomPlaceholder()
     names = FetchNames()
