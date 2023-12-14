@@ -10,6 +10,7 @@ import numpy as np
 import os
 from flask import Flask, redirect, url_for, render_template, request
 import random
+import time
 
 matplotlib.use('agg')
 
@@ -258,6 +259,7 @@ def generate():
     errorflag = False
     try:
         inputText = request.form['input_field']
+        
         stability = float(request.form['stability_slider'])
         similarity_boost = float(request.form['similarity_boost_slider'])
         name = request.form['dropdown']
@@ -286,6 +288,7 @@ def generate():
             errormessage = "An error has occured, and we aren't sure why this has happened. If you're reading this, please contact the developers."
     inputText = GetRandomPlaceholder()
     names = FetchNames()
+    time.sleep(0.5)
     return render_template("generate.html", names=names,placeholder=inputText, voiceUrl=staticUrl,generateflag=generateflag, errormessage = errormessage, errorflag = errorflag)
 
 @app.route('/compare', methods=['POST','GET'])
@@ -339,6 +342,7 @@ def compare():
 
     inputText = GetRandomPlaceholder()
     names= FetchNames()
+    time.sleep(0.5)
     return render_template("compare.html",names=names,placeholder=inputText,voiceUrl=staticUrl,similarityPercent=similarityPercent,pathToGraph=pathToGraph,compareflag=compareflag, errormessage = errormessage, errorflag = errorflag)    
 
 @app.route('/clone', methods=['POST','GET'])
